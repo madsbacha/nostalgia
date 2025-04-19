@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS main.media;
+DROP TABLE IF EXISTS main.user;
+DROP TABLE IF EXISTS main.setting;
+DROP TABLE IF EXISTS main.file;
+DROP TABLE IF EXISTS main.thumbnail;
