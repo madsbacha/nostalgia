@@ -2,7 +2,7 @@ import {getRedirectUri} from "@/lib/discord";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {AUTH_COOKIE_NAME} from "@/lib/auth/server";
-import {apiAuthUrl, REDIRECT_AUTHORIZED} from "@/lib/endpoints";
+import {apiAuthUrl, REDIRECT_AUTH_PERSIST_COOKIE} from "@/lib/endpoints";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);
@@ -36,11 +36,12 @@ export async function GET(request: Request) {
 
         const isSecure = process.env.NODE_ENV === 'production' || process.env.FRONTEND_URL?.startsWith('https://')
         const cookieStore = await cookies()
-        cookieStore.set(AUTH_COOKIE_NAME, response.token, { secure: isSecure, sameSite: "strict" })
+        const maxAge = 60 * 60 * 24 * 7 // 1 week
+        cookieStore.set(AUTH_COOKIE_NAME, response.token, { secure: isSecure, sameSite: "strict", maxAge: maxAge })
     } catch (e) {
         console.error(e);
         return new Response("Internal server error", { status: 500 });
     } finally {
-        redirect(REDIRECT_AUTHORIZED)
+        redirect(REDIRECT_AUTH_PERSIST_COOKIE)
     }
 }

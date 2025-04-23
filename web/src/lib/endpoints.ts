@@ -5,6 +5,7 @@ export const ENDPOINT_PAGE_LOGOUT = "/logout";
 
 export const REDIRECT_UNAUTHORIZED = ENDPOINT_PAGE_LOGIN;
 export const REDIRECT_AUTHORIZED = ENDPOINT_PAGE_HOME;
+export const REDIRECT_AUTH_PERSIST_COOKIE = `${ENDPOINT_PAGE_LOGIN}?refresh`;
 
 export const API_URL = () => {
     let url = process.env.NEXT_PUBLIC_API_URL;

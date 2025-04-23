@@ -1,15 +1,20 @@
 "use server";
 
-import {getAuthToken} from "@/lib/auth/server";
+import {getAuthToken, redirectIfUnauthorized} from "@/lib/auth/server";
 import {redirect} from "next/navigation";
-import {ENDPOINT_PAGE_HOME} from "@/lib/endpoints";
+import {ENDPOINT_PAGE_HOME, ENDPOINT_PAGE_LOGIN} from "@/lib/endpoints";
 import {Navbar} from "@/components/navbar";
 import {UploadMediaForm} from "@/components/upload_media_form";
 import {getCurrentUser} from "@/lib/api";
 
 export default async function Home() {
+    await redirectIfUnauthorized();
     const auth_token = await getAuthToken();
-    const user = auth_token != null ? await getCurrentUser(auth_token) : null;
+    if (auth_token === null) {
+        redirect(ENDPOINT_PAGE_LOGIN)
+    }
+
+    const user = await getCurrentUser(auth_token);
     if (!user?.permissions.can_upload_media) {
         redirect(ENDPOINT_PAGE_HOME);
     }
