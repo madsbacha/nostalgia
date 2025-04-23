@@ -16,7 +16,9 @@ import {
 import { Input } from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea";
 import {uploadMediaFile} from "@/lib/api";
-import {redirect} from "next/navigation";
+import {useRouter} from "next/navigation";
+import {toast} from "sonner";
+import {useState} from "react";
 
 const parseTags: (tags: string) => string[] = tags => tags.split(",").map(tag => tag.trim())
 
@@ -41,6 +43,9 @@ const FormSchema = z.object({
     ),
     tags: z.string()
         .refine(tags => {
+            if (tags.trim().length === 0) {
+                return true;
+            }
             const regex = /^[a-zA-Z0-9_]+$/;
             return parseTags(tags).every(tag => regex.test(tag));
         }, { message: "Tags should only contain alphanumeric characters and underscores" })
@@ -89,12 +94,15 @@ function InputFile({ accept, disabled, name, ref, onBlur, onChange }: InputFileP
     )
 }
 
-function uploadForm(data: z.infer<typeof FormSchema>) {
-    uploadMediaFile(data.file, data.title, data.description, data.tags)
-        .then(r => redirect(`/media/${r.media_id}`))
+async function uploadForm(data: z.infer<typeof FormSchema>): Promise<string> {
+    const response = await uploadMediaFile(data.file, data.title, data.description, data.tags)
+    return response.media_id;
 }
 
 export function UploadMediaForm() {
+    const router = useRouter()
+    const [uploading, setUploading] = useState(false)
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -104,17 +112,17 @@ export function UploadMediaForm() {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        // toast({
-        //     title: "You submitted the following values:",
-        //     description: (
-        //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        //   <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        // </pre>
-        //     ),
-        // })
-        console.log(data)
-        uploadForm(data)
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
+        setUploading(true)
+        toast("Uploading...")
+        try {
+            const media_id = await uploadForm(data)
+            router.push(`/media/${media_id}`)
+        } catch (e) {
+            console.error(e)
+            toast.error("Failed to upload media")
+            setUploading(false)
+        }
     }
 
     return (
@@ -175,7 +183,7 @@ export function UploadMediaForm() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" disabled={form.formState.isSubmitting}>Submit</Button>
+                    <Button type="submit" disabled={uploading}>Submit</Button>
                 </form>
             </Form>
         </>
