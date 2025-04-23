@@ -2,8 +2,6 @@
 
 import {SkeletonVideoCard} from "@/components/skeleton_video_card";
 import {useMediaList, useTags} from "@/lib/api/client";
-import {AspectRatio} from "@/components/ui/aspect-ratio";
-import Image from "next/image"
 import Link from "next/link";
 import {MultiSelect} from "@/components/multi-select";
 import {useState} from "react";

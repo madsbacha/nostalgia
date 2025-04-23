@@ -4,8 +4,7 @@ export function blurHashToDataURL(hash: string | undefined): string | undefined 
     if (!hash) return undefined
 
     const pixels = decode(hash, 32, 32)
-    const dataURL = parsePixels(pixels, 32, 32)
-    return dataURL
+    return parsePixels(pixels, 32, 32)
 }
 
 // thanks to https://github.com/wheany/js-png-encoder
@@ -75,7 +74,7 @@ function generatePng(width: number, height: number, rgbaString: string) {
     }
 
     function adler32(data: string) {
-        let MOD_ADLER = 65521
+        const MOD_ADLER = 65521
         let a = 1
         let b = 0
 
