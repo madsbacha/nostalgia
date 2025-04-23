@@ -1,10 +1,20 @@
 import { decode } from "blurhash"
 
+const cache: Record<string, string> = {}
+
 export function blurHashToDataURL(hash: string | undefined): string | undefined {
     if (!hash) return undefined
 
+    const cachedBlurDataURL = cache[hash]
+
+    if(cachedBlurDataURL) {
+        return cachedBlurDataURL
+    }
+
     const pixels = decode(hash, 32, 32)
-    return parsePixels(pixels, 32, 32)
+    const dataURL = parsePixels(pixels, 32, 32)
+    cache[hash] = dataURL
+    return dataURL
 }
 
 // thanks to https://github.com/wheany/js-png-encoder
