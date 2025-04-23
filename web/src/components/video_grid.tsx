@@ -8,6 +8,7 @@ import Link from "next/link";
 import {MultiSelect} from "@/components/multi-select";
 import {useState} from "react";
 import {Skeleton} from "@/components/ui/skeleton";
+import {Thumbnail} from "@/components/Thumbnail";
 
 export function VideoGrid() {
     const { mediaList, isLoading, isError } = useMediaList();
@@ -55,15 +56,7 @@ export function VideoGrid() {
                 <div className="flex flex-col space-y-3" key={media.id}>
                     <Link href={`/media/${media.id}`}>
                         <div className="w-full mb-1">
-                            <AspectRatio ratio={16 / 9}>
-                                <Image
-                                    src={media.thumbnail_url}
-                                    alt={media.title}
-                                    fill
-                                    className="h-full w-full rounded-md object-cover"
-                                    unoptimized
-                                />
-                            </AspectRatio>
+                            <Thumbnail src={media.thumbnail_url} alt={media.title} blurhash={media.thumbnail_blurhash} />
                         </div>
                         <h3>{media.title}</h3>
                     </Link>
